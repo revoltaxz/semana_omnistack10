@@ -1,87 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import api from './services/api'
 
 import "./global.css"
 import "./App.css"
 import "./Sidebar.css"
 import "./Main.css"
 
+import DevItem from './components/DevItem';
+import DevForm from './components/DevForm';
+
 function App() {
+  const [devs, setDevs] = useState([])
+
+  useEffect(() => {
+    async function loadDevs() {
+      const response = await api.get('/devs')
+
+      setDevs(response.data)
+    }
+    loadDevs()
+  }, [])
+
+  async function handleAddDev(data) {
+    const response = await api.post('/devs', data)
+
+    setDevs([...devs, response.data])
+  }
+
   return (
     <div id="app">
       <aside>
         <strong>Cadastral</strong>
-        <form>
-          <div className="input-block">
-            <label htmlFor="github_username">Usuário do Github</label>
-            <input name="github_username" id="github_username" required />
-          </div>
-
-          <div className="input-block">
-            <label htmlFor="techs">Tecnologias</label>
-            <input name="techs" id="techs" required />
-          </div>
-          
-          <div className="input-group">
-            <div className="input-block">
-              <label htmlFor="latitude">Latitude</label>
-              <input name="latitude" id="latitude" required />
-            </div>
-
-            <div className="input-block">
-              <label htmlFor="longitude">Longitude</label>
-              <input name="longitude" id="longitude" required />
-            </div>
-          </div>
-
-          <button type="submit">Salvar</button>
-        </form>
+        <DevForm onSubmit={handleAddDev} />
       </aside>
       <main>
         <ul>
-          <li className="dev-item">
-            <header>
-              <img src="https://avatars3.githubusercontent.com/u/13983654?s=460&v=4" alt="Guilherme Revolta"/>
-              <div className="user-info">
-                <strong>Guilherme Revolta</strong>
-                <span>ReactJS, Elixir</span>
-              </div>
-            </header>
-            <p>Biografia</p>
-            <a href="https://github.com/revoltaxz">Acessar Perfil</a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img src="https://avatars3.githubusercontent.com/u/13983654?s=460&v=4" alt="Guilherme Revolta"/>
-              <div className="user-info">
-                <strong>Guilherme Revolta</strong>
-                <span>ReactJS, Elixir</span>
-              </div>
-            </header>
-            <p>Biografia</p>
-            <a href="https://github.com/revoltaxz">Acessar Perfil</a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img src="https://avatars3.githubusercontent.com/u/13983654?s=460&v=4" alt="Guilherme Revolta"/>
-              <div className="user-info">
-                <strong>Guilherme Revolta</strong>
-                <span>ReactJS, Elixir</span>
-              </div>
-            </header>
-            <p>Biografia</p>
-            <a href="https://github.com/revoltaxz">Acessar Perfil</a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img src="https://avatars3.githubusercontent.com/u/13983654?s=460&v=4" alt="Guilherme Revolta"/>
-              <div className="user-info">
-                <strong>Guilherme Revolta</strong>
-                <span>ReactJS, Elixir</span>
-              </div>
-            </header>
-            <p>Biografia</p>
-            <a href="https://github.com/revoltaxz">Acessar Perfil</a>
-          </li>
+          {devs.map(dev => (
+            <DevItem key={dev._id} dev={dev} />
+                      
+          ))}
         </ul>
 
       </main>
